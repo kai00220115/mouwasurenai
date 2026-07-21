@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>リアルタイム時計</title>
+    <style>
+        #my-clock {
+            font-size: 2rem;
+            font-weight: bold;
+            font-family: monospace;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="my-clock"></div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ja-JP');
+            document.getElementById('my-clock').textContent = timeString;
+        }
+        // 1秒ごとに更新
+        setInterval(updateClock, 1000);
+        // 初回表示
+        updateClock();
+    </script>
+</body>
+</html>
