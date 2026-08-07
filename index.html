@@ -121,7 +121,9 @@
 <script src="time.js"></script>
 <script>
   const date = new Date();
-  const schedules = {};
+  const saved = localStorage.getItem("schedules");
+  const schedules = saved ? JSON.parse(saved) : {};
+
   let selectedDayKey = null;
  
   function renderCalendar() {
@@ -185,6 +187,9 @@
     } else {
       delete schedules[selectedDayKey];
     }
+    // リロード時に消えない
+    localStorage.setItem("schedules", JSON.stringify(schedules));
+    
     renderCalendar();
   });
  
@@ -192,6 +197,8 @@
     if (!selectedDayKey) return;
     delete schedules[selectedDayKey];
     document.getElementById('schedule-text').value = '';
+    // リロード時に消えない
+    localStorage.setItem("schedules", JSON.stringify(schedules));
     renderCalendar();
   });
  
