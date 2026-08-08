@@ -1,0 +1,22 @@
+<input type="time" id="alarmTime">
+<button onclick="setAlarm()">アラームをセット</button>
+<audio id="alarmSound" src="alarm.mp3"></audio>
+
+<script>
+let alarmTime = null;
+
+function setAlarm() {
+  alarmTime = document.getElementById('alarmTime').value; // "14:30"のような形式
+  checkAlarm();
+}
+
+function checkAlarm() {
+  setInterval(() => {
+    const now = new Date();
+    const current = now.toTimeString().slice(0,5); // "14:30"
+    if (current === alarmTime) {
+      document.getElementById('alarmSound').play();
+    }
+  }, 1000);
+}
+</script>
