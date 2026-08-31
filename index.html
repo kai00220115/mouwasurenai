@@ -130,6 +130,7 @@
   function renderCalendar() {
     const year = date.getFullYear();
     const month = date.getMonth();
+
  
     document.getElementById('month-year').innerText = `${year}年 ${month + 1}月`;
     const firstDayIndex = new Date(year, month, 1).getDay();
@@ -156,8 +157,10 @@
       dayDiv.addEventListener('click', () => selectDay(dayDiv));
       daysGrid.appendChild(dayDiv);
     }
-  }
     restoreSelection();
+   }
+  
+  
   
  
   function selectDay(dayDiv) {
@@ -207,5 +210,24 @@
   document.getElementById('next').addEventListener('click', () => { date.setMonth(date.getMonth() + 1); renderCalendar(); });
  
   renderCalendar();
+
+  document.addEventListener("keydown", (e) => {
+  if (!selectedDayKey) return;
+
+  const [year, month, day] = selectedDayKey.split("-").map(Number);
+
+  let newDate = new Date(year, month - 1, day);
+
+  if (e.key === "ArrowLeft") newDate.setDate(newDate.getDate() - 1);
+  if (e.key === "ArrowRight") newDate.setDate(newDate.getDate() + 1);
+  if (e.key === "ArrowUp") newDate.setDate(newDate.getDate() - 7);
+  if (e.key === "ArrowDown") newDate.setDate(newDate.getDate() + 7);
+
+  const newKey = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,"0")}-${String(newDate.getDate()).padStart(2,"0")}`;
+
+  const target = document.querySelector(`.days div[data-date="${newKey}"]`);
+  if (target) selectDay(target);
+});
+
 </script>
 
