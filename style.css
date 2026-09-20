@@ -81,6 +81,37 @@ dd {
   padding: 20px 0 20px 40px;
   color: #000;
 }
+
+/* ダークモード適応 */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+
+  header {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+
+  .calendar {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+
+  button {
+    background-color: #333333;
+    color: #ffffff;
+    border: 1px solid #555555;
+  }
+
+  input, textarea {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: 1px solid #555555;
+  }
+}
+/* ダークモード適応ここまで*/
 /* ここまで */
 /* ここまで */
 
