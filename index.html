@@ -23,7 +23,18 @@
       color: #333;
     }
     .calendar { width: 600px; background: rgb(255, 255, 255); padding: 50px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-   
+    .input-row {
+      display: flex;
+      gap: 20px;
+    }
+
+    .input-block {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+//持ち物の欄
+    
     /* ヘッダー（月切り替え） */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .header button { padding: 5px 10px; cursor: pointer; }
@@ -120,8 +131,20 @@
 </div>
 
 <div class="schedule-panel" id="schedule-panel">
-  <h3 id="selected-date">日付を選択してください</h3>
-  <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
+  <div class="input-row">
+  <div class="input-block">
+    <h3 id="selected-date">日付を選択してください</h3>
+    <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
+  </div>
+
+  <div class="input-block">
+    <h3>　</h3>
+    <textarea id="items-text" placeholder="持ち物を記入してください"></textarea>
+  </div>
+</div>
+
+
+  
   <label>アラーム時刻 <input id="alarm-time" class="alarm-time" type="time"></label>
   <label class="alarm-option"><input id="alarm-enabled" type="checkbox"> この予定の音声アラームを有効にする</label>
   <p id="alarm-status" class="alarm-option" aria-live="polite"></p>
@@ -190,9 +213,15 @@
     document.querySelectorAll('.days div').forEach(el => el.classList.toggle('selected', el === dayDiv));
     document.getElementById('selected-date').innerText = `${selectedDayKey} の予定`;
     const schedule = schedules[selectedDayKey];
-    document.getElementById('schedule-text').value = typeof schedule === 'string' ? schedule : (schedule?.text || '');
-    alarmTimeInput.value = typeof schedule === 'object' ? (schedule.alarmTime || '') : '';
-    alarmEnabledInput.checked = typeof schedule === 'object' && schedule.alarmEnabled === true;
+    // 文字列の古いデータを新しい形式に変換する
+    const fixed = typeof schedule === "string"
+  ? { text: schedule, items: "", alarmTime: "", alarmEnabled: false }
+  : schedule || {};
+    document.getElementById('schedule-text').value = fixed.text || '';
+    document.getElementById('items-text').value = fixed.items || '';
+    alarmTimeInput.value = fixed.alarmTime || '';
+    alarmEnabledInput.checked = fixed.alarmEnabled === true;
+
   }
  
   function restoreSelection() {
@@ -212,10 +241,11 @@
   document.getElementById('save-schedule').addEventListener('click', () => {
     if (!selectedDayKey) return;
     const text = document.getElementById('schedule-text').value.trim();
+    const items = document.getElementById('items-text').value.trim();
     const alarmTime = alarmTimeInput.value;
     const alarmEnabled = alarmEnabledInput.checked;
-    if (text || alarmTime || alarmEnabled) {
-      schedules[selectedDayKey] = { text, alarmTime, alarmEnabled };
+    if (text || items || alarmTime || alarmEnabled) {
+      schedules[selectedDayKey] = { text, items,alarmTime, alarmEnabled };
     } else {
       delete schedules[selectedDayKey];
     }
