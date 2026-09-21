@@ -69,6 +69,12 @@
       resize: vertical;
       font-size: 14px;
     }
+    .alarm-time {
+      display: block;
+      margin-top: 10px;
+      padding: 8px;
+      font-size: 16px;
+    }
     .schedule-actions {
       margin-top: 10px;
       display: flex;
@@ -88,6 +94,10 @@
     }
     .schedule-actions button:hover {
       opacity: 0.9;
+    }
+    .alarm-option {
+      display: block;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -112,11 +122,15 @@
 <div class="schedule-panel" id="schedule-panel">
   <h3 id="selected-date">日付を選択してください</h3>
   <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
+  <label>アラーム時刻 <input id="alarm-time" class="alarm-time" type="time"></label>
+  <label class="alarm-option"><input id="alarm-enabled" type="checkbox"> この予定の音声アラームを有効にする</label>
   <div class="schedule-actions">
     <button id="save-schedule">保存</button>
     <button id="clear-schedule">削除</button>
   </div>
 </div>
+
+<audio id="alarm-sound" src="alarm.mp3" preload="auto"></audio>
 
 <script src="time.js"></script>
 <script>
@@ -124,6 +138,11 @@
   // 保存されている予定を読み込む
   const saved = localStorage.getItem("schedules");
   const schedules = saved ? JSON.parse(saved) : {};
+  const alarmTimeInput = document.getElementById('alarm-time');
+  const alarmEnabledInput = document.getElementById('alarm-enabled');
+  const alarmSound = document.getElementById('alarm-sound');
+  const soundedAlarmKeys = new Set();
+  let audioEnabled = false;
 
   let selectedDayKey = null;
  
@@ -168,7 +187,10 @@
     selectedDayKey = dayDiv.dataset.date;
     document.querySelectorAll('.days div').forEach(el => el.classList.toggle('selected', el === dayDiv));
     document.getElementById('selected-date').innerText = `${selectedDayKey} の予定`;
-    document.getElementById('schedule-text').value = schedules[selectedDayKey] || '';
+    const schedule = schedules[selectedDayKey];
+    document.getElementById('schedule-text').value = typeof schedule === 'string' ? schedule : (schedule?.text || '');
+    alarmTimeInput.value = typeof schedule === 'object' ? (schedule.alarmTime || '') : '';
+    alarmEnabledInput.checked = typeof schedule === 'object' && schedule.alarmEnabled === true;
   }
  
   function restoreSelection() {
@@ -180,14 +202,18 @@
       selectedDayKey = null;
       document.getElementById('selected-date').innerText = '日付を選択してください';
       document.getElementById('schedule-text').value = '';
+      alarmTimeInput.value = '';
+      alarmEnabledInput.checked = false;
     }
   }
  
   document.getElementById('save-schedule').addEventListener('click', () => {
     if (!selectedDayKey) return;
     const text = document.getElementById('schedule-text').value.trim();
-    if (text) {
-      schedules[selectedDayKey] = text;
+    const alarmTime = alarmTimeInput.value;
+    const alarmEnabled = alarmEnabledInput.checked;
+    if (text || alarmTime || alarmEnabled) {
+      schedules[selectedDayKey] = { text, alarmTime, alarmEnabled };
     } else {
       delete schedules[selectedDayKey];
     }
@@ -201,6 +227,8 @@
     if (!selectedDayKey) return;
     delete schedules[selectedDayKey];
     document.getElementById('schedule-text').value = '';
+    alarmTimeInput.value = '';
+    alarmEnabledInput.checked = false;
     // 削除後の予定を反映する
     localStorage.setItem("schedules", JSON.stringify(schedules));
     renderCalendar();
@@ -210,6 +238,33 @@
   document.getElementById('next').addEventListener('click', () => { date.setMonth(date.getMonth() + 1); renderCalendar(); });
  
   renderCalendar();
+
+  alarmEnabledInput.addEventListener('change', () => {
+    if (!alarmEnabledInput.checked) {
+      return;
+    }
+    alarmSound.play().then(() => {
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+      audioEnabled = true;
+    }).catch(() => {
+      alarmEnabledInput.checked = false;
+      alert('音声を有効にするには、ブラウザの音声再生を許可してください。');
+    });
+  });
+
+  setInterval(() => {
+    const now = new Date();
+    const dateKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const schedule = schedules[dateKey];
+    const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const alarmKey = `${dateKey} ${schedule?.alarmTime}`;
+    if (audioEnabled && schedule?.alarmEnabled && schedule.alarmTime === currentTime && !soundedAlarmKeys.has(alarmKey)) {
+      alarmSound.currentTime = 0;
+      alarmSound.play();
+      soundedAlarmKeys.add(alarmKey);
+    }
+  }, 1000);
 
   document.addEventListener("keydown", (e) => {
   if (!selectedDayKey) return;
