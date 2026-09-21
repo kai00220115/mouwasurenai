@@ -214,6 +214,7 @@
     document.getElementById('selected-date').innerText = `${selectedDayKey} の予定`;
     const schedule = schedules[selectedDayKey];
     document.getElementById('schedule-text').value = typeof schedule === 'string' ? schedule : (schedule?.text || '');
+    document.getElementById('items-text').value = schedule?.items || '';
     alarmTimeInput.value = typeof schedule === 'object' ? (schedule.alarmTime || '') : '';
     alarmEnabledInput.checked = typeof schedule === 'object' && schedule.alarmEnabled === true;
   }
