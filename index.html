@@ -217,10 +217,11 @@
     const fixed = typeof schedule === "string"
   ? { text: schedule, items: "", alarmTime: "", alarmEnabled: false }
   : schedule || {};
-    document.getElementById('schedule-text').value = typeof schedule === 'string' ? schedule : (schedule?.text || '');
-    document.getElementById('items-text').value = schedule?.items || '';
-    alarmTimeInput.value = typeof schedule === 'object' ? (schedule.alarmTime || '') : '';
-    alarmEnabledInput.checked = typeof schedule === 'object' && schedule.alarmEnabled === true;
+    document.getElementById('schedule-text').value = fixed.text || '';
+    document.getElementById('items-text').value = fixed.items || '';
+    alarmTimeInput.value = fixed.alarmTime || '';
+    alarmEnabledInput.checked = fixed.alarmEnabled === true;
+
   }
  
   function restoreSelection() {
