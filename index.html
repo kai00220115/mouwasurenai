@@ -213,6 +213,10 @@
     document.querySelectorAll('.days div').forEach(el => el.classList.toggle('selected', el === dayDiv));
     document.getElementById('selected-date').innerText = `${selectedDayKey} の予定`;
     const schedule = schedules[selectedDayKey];
+    // 文字列の古いデータを新しい形式に変換する
+    const fixed = typeof schedule === "string"
+  ? { text: schedule, items: "", alarmTime: "", alarmEnabled: false }
+  : schedule || {};
     document.getElementById('schedule-text').value = typeof schedule === 'string' ? schedule : (schedule?.text || '');
     document.getElementById('items-text').value = schedule?.items || '';
     alarmTimeInput.value = typeof schedule === 'object' ? (schedule.alarmTime || '') : '';
