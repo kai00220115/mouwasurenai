@@ -124,6 +124,7 @@
   <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
   <label>アラーム時刻 <input id="alarm-time" class="alarm-time" type="time"></label>
   <label class="alarm-option"><input id="alarm-enabled" type="checkbox"> この予定の音声アラームを有効にする</label>
+  <p id="alarm-status" class="alarm-option" aria-live="polite"></p>
   <div class="schedule-actions">
     <button id="save-schedule">保存</button>
     <button id="clear-schedule">削除</button>
@@ -141,6 +142,7 @@
   const alarmTimeInput = document.getElementById('alarm-time');
   const alarmEnabledInput = document.getElementById('alarm-enabled');
   const alarmSound = document.getElementById('alarm-sound');
+  const alarmStatus = document.getElementById('alarm-status');
   const soundedAlarmKeys = new Set();
   let audioEnabled = false;
 
@@ -241,16 +243,29 @@
 
   alarmEnabledInput.addEventListener('change', () => {
     if (!alarmEnabledInput.checked) {
+      alarmStatus.textContent = '音声アラームは無効です。';
+      audioEnabled = false;
       return;
     }
+    alarmSound.load();
     alarmSound.play().then(() => {
       alarmSound.pause();
       alarmSound.currentTime = 0;
       audioEnabled = true;
+      alarmStatus.textContent = '音声アラームは有効です。';
     }).catch(() => {
       alarmEnabledInput.checked = false;
-      alert('音声を有効にするには、ブラウザの音声再生を許可してください。');
+      audioEnabled = false;
+      if (alarmSound.error) {
+        alarmStatus.textContent = 'alarm.mp3を読み込めません。GitHubにalarm.mp3を追加してください。';
+      } else {
+        alarmStatus.textContent = '音声再生が拒否されました。ページをクリックしてから、もう一度チェックしてください。';
+      }
     });
+  });
+
+  alarmSound.addEventListener('error', () => {
+    alarmStatus.textContent = 'alarm.mp3を読み込めません。ファイル名とGitHubへの登録を確認してください。';
   });
 
   setInterval(() => {
