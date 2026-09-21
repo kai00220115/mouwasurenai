@@ -120,8 +120,20 @@
 </div>
 
 <div class="schedule-panel" id="schedule-panel">
-  <h3 id="selected-date">日付を選択してください</h3>
-  <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
+  <div class="input-row">
+  <div class="input-block">
+    <label for="schedule-text">予定</label>
+    <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
+  </div>
+
+  <div class="input-block">
+    <label for="items-text">持ち物</label>
+    <textarea id="items-text" placeholder="持ち物を記入してください"></textarea>
+  </div>
+</div>
+//横並び
+
+  
   <label>アラーム時刻 <input id="alarm-time" class="alarm-time" type="time"></label>
   <label class="alarm-option"><input id="alarm-enabled" type="checkbox"> この予定の音声アラームを有効にする</label>
   <p id="alarm-status" class="alarm-option" aria-live="polite"></p>
