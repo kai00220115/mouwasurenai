@@ -244,7 +244,7 @@
     const items = document.getElementById('items-text').value.trim();
     const alarmTime = alarmTimeInput.value;
     const alarmEnabled = alarmEnabledInput.checked;
-    if (text || alarmTime || alarmEnabled) {
+    if (text || items || alarmTime || alarmEnabled) {
       schedules[selectedDayKey] = { text, items,alarmTime, alarmEnabled };
     } else {
       delete schedules[selectedDayKey];
