@@ -235,10 +235,11 @@
   document.getElementById('save-schedule').addEventListener('click', () => {
     if (!selectedDayKey) return;
     const text = document.getElementById('schedule-text').value.trim();
+    const items = document.getElementById('items-text').value.trim();
     const alarmTime = alarmTimeInput.value;
     const alarmEnabled = alarmEnabledInput.checked;
     if (text || alarmTime || alarmEnabled) {
-      schedules[selectedDayKey] = { text, alarmTime, alarmEnabled };
+      schedules[selectedDayKey] = { text, items,alarmTime, alarmEnabled };
     } else {
       delete schedules[selectedDayKey];
     }
