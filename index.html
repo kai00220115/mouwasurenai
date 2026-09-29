@@ -5,6 +5,14 @@
   <title>モウワスレナーイ
   </title>
   <style>
+     #schedule-panel {
+       position: absolute;   
+       top: 20px;           
+       left: 50%;
+       transform: translateX(-50%);
+       z-index: 1000;
+       display: none;        /* 最初は非表示 */
+     }
     body {display: flex; flex-direction: column; align-items: center; background: #ffffff; padding: 20px 0; }
     .clock-card {
       width: 600px;
@@ -132,14 +140,7 @@
 
 <div class="schedule-panel" id="schedule-panel">
   
-  #schedule-panel {
-  position: absolute;   
-  top: 20px;           
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  display: none;        /* 最初は非表示 */
-}
+ 
 
   <div class="input-row">
   <div class="input-block">
