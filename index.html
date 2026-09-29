@@ -140,7 +140,17 @@
 
 <div class="schedule-panel" id="schedule-panel">
   
- 
+ //バツボタン
+  <button id="close-panel" style="
+    position:absolute;
+    top:10px;
+    right:10px;
+    background:#ccc;
+    border:none;
+    border-radius:4px;
+    padding:4px 8px;
+    cursor:pointer;
+  ">×</button>
 
   <div class="input-row">
   <div class="input-block">
@@ -327,7 +337,7 @@
 
   document.addEventListener("keydown", (e) => {
   if (!selectedDayKey) return;
-
+　
   const [year, month, day] = selectedDayKey.split("-").map(Number);
 
   let newDate = new Date(year, month - 1, day);
@@ -341,6 +351,9 @@
 
   const target = document.querySelector(`.days div[data-date="${newKey}"]`);
   if (target) selectDay(target);
+});
+document.getElementById('close-panel').addEventListener('click', () => {
+  document.getElementById('schedule-panel').style.display = 'none';
 });
 
 </script>
