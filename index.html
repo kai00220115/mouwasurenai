@@ -223,6 +223,9 @@
     selectedDayKey = dayDiv.dataset.date;
     document.querySelectorAll('.days div').forEach(el => el.classList.toggle('selected', el === dayDiv));
     document.getElementById('selected-date').innerText = `${selectedDayKey} の予定`;
+    //追加した場所
+    document.getElementById('schedule-panel').style.display = 'block';
+    
     const schedule = schedules[selectedDayKey];
     // 文字列の古いデータを新しい形式に変換する
     const fixed = typeof schedule === "string"
