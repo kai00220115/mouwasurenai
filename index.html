@@ -131,6 +131,16 @@
 </div>
 
 <div class="schedule-panel" id="schedule-panel">
+  
+  #schedule-panel {
+  position: absolute;   
+  top: 20px;           
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: none;        /* 最初は非表示 */
+}
+
   <div class="input-row">
   <div class="input-block">
     <h3 id="selected-date">日付を選択してください</h3>
