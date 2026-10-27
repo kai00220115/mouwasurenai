@@ -261,7 +261,26 @@
       alarmEnabledInput.checked = false;
     }
   }
- 
+
+document.getElementById('save-schedule').addEventListener('click', () => {
+  if (!selectedDayKey) return;
+  const text = document.getElementById('schedule-text').value.trim();
+  const items = document.getElementById('items-text').value.trim();
+  const alarmTime = alarmTimeInput.value;
+  const alarmEnabled = alarmEnabledInput.checked;
+
+  if (text || items || alarmTime || alarmEnabled) {
+    schedules[selectedDayKey] = {
+      text, items, alarmTime, alarmEnabled
+    };
+  } else {
+    delete schedules[selectedDayKey];
+  }
+  // 保存した予定を記録する
+  localStorage.setItem("schedules", JSON.stringify(schedules));
+  renderCalendar();
+});
+  
  // 自動保存を行う関数
 function autoSave() {
   if (!selectedDayKey) return;
