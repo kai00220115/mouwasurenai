@@ -340,35 +340,31 @@ document.getElementById('save-schedule').addEventListener('click', () => {
   }, 1000);
 
   document.addEventListener("keydown", (e) => {
-  if (!selectedDayKey) return;
-　
-  const [year, month, day] = selectedDayKey.split("-").map(Number);
+    // テキストエリアや入力欄で入力中の場合は、日付変更ショートカットを無効化する
+    if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
+      return;
+    }
 
-  let newDate = new Date(year, month - 1, day);
+    if (!selectedDayKey) return;
+  
+    const [year, month, day] = selectedDayKey.split("-").map(Number);
 
-  if (e.key === "ArrowLeft") newDate.setDate(newDate.getDate() - 1);
-  if (e.key === "ArrowRight") newDate.setDate(newDate.getDate() + 1);
-  if (e.key === "ArrowUp") newDate.setDate(newDate.getDate() - 7);
-  if (e.key === "ArrowDown") newDate.setDate(newDate.getDate() + 7);
+    let newDate = new Date(year, month - 1, day);
 
-  const newKey = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,"0")}-${String(newDate.getDate()).padStart(2,"0")}`;
+    if (e.key === "ArrowLeft") newDate.setDate(newDate.getDate() - 1);
+    if (e.key === "ArrowRight") newDate.setDate(newDate.getDate() + 1);
+    if (e.key === "ArrowUp") newDate.setDate(newDate.getDate() - 7);
+    if (e.key === "ArrowDown") newDate.setDate(newDate.getDate() + 7);
 
-  const target = document.querySelector(`.days div[data-date="${newKey}"]`);
-  if (target) selectDay(target);
-});
+    const newKey = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,"0")}-${String(newDate.getDate()).padStart(2,"0")}`;
+
+    const target = document.querySelector(`.days div[data-date="${newKey}"]`);
+    if (target) selectDay(target);
+  });
 document.getElementById('close-panel').addEventListener('click', () => {
   document.getElementById('schedule-panel').style.display = 'none';
 });
 
-  // テキストエリア内でのEnterキーの挙動を安定させる
-document.querySelectorAll('textarea').forEach(textarea => {
-  textarea.addEventListener('keydown', (e) => {
-    // 日本語変換中のEnter（isComposingがtrue）や通常のEnterが、
-    // 他のグローバルなキーイベントに影響を与えないようにする
-    if (e.key === 'Enter') {
-      e.stopPropagation(); // イベントのバブリングを止める
-    }
-  });
-});
+ 
 </script>
 
