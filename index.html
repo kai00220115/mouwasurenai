@@ -41,7 +41,7 @@
       display: flex;
       flex-direction: column;
     }
-//持ち物の欄
+/* 持ち物の欄 */
     
     /* ヘッダー（月切り替え） */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -145,7 +145,7 @@
     position:absolute;
     top:10px;
     right:10px;
-    background: #ffccc; color: #333;
+    background: #ffcccc; color: #333;
     border:none;
     border-radius:4px;
     padding:4px 8px;
@@ -155,12 +155,12 @@
   <div class="input-row">
   <div class="input-block">
     <h3 id="selected-date">日付を選択してください</h3>
-    <textarea id="schedule-text" name="schedule_input_random_9981" placeholder="ここに予定を書いてください" autocomplete="no-thanks" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    <textarea id="schedule-text" placeholder="ここに予定を書いてください"></textarea>
   </div>
 
   <div class="input-block">
-    <h3> </h3>
-    <textarea id="items-text" name="items_input_random_9981" placeholder="持ち物を記入してください" autocomplete="no-thanks" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    <h3>　</h3>
+    <textarea id="items-text" placeholder="持ち物を記入してください"></textarea>
   </div>
 </div>
 
@@ -261,32 +261,33 @@
       alarmEnabledInput.checked = false;
     }
   }
-
-document.getElementById('save-schedule').addEventListener('click', () => {
-  if (!selectedDayKey) return;
-  const text = document.getElementById('schedule-text').value.trim();
-  const items = document.getElementById('items-text').value.trim();
-  const alarmTime = alarmTimeInput.value;
-  const alarmEnabled = alarmEnabledInput.checked;
-
-  if (text || items || alarmTime || alarmEnabled) {
-    schedules[selectedDayKey] = {
-      text, items, alarmTime, alarmEnabled
-    };
-  } else {
-    delete schedules[selectedDayKey];
+ 
+  function saveCurrentSchedule() {
+    if (!selectedDayKey) return;
+    const text = document.getElementById('schedule-text').value;
+    const items = document.getElementById('items-text').value;
+    const alarmTime = alarmTimeInput.value;
+    const alarmEnabled = alarmEnabledInput.checked;
+    if (text.trim() || items.trim() || alarmTime || alarmEnabled) {
+      schedules[selectedDayKey] = { text, items, alarmTime, alarmEnabled };
+    } else {
+      delete schedules[selectedDayKey];
+    }
+    localStorage.setItem("schedules", JSON.stringify(schedules));
+    renderCalendar();
   }
-  // 保存した予定を記録する
-  localStorage.setItem("schedules", JSON.stringify(schedules));
-  renderCalendar();
-});
-  
-; 
+
+  document.getElementById('schedule-text').addEventListener('input', saveCurrentSchedule);
+  document.getElementById('items-text').addEventListener('input', saveCurrentSchedule);
+  alarmTimeInput.addEventListener('change', saveCurrentSchedule);
+  alarmEnabledInput.addEventListener('change', saveCurrentSchedule);
+  document.getElementById('save-schedule').addEventListener('click', saveCurrentSchedule);
  
   document.getElementById('clear-schedule').addEventListener('click', () => {
     if (!selectedDayKey) return;
     delete schedules[selectedDayKey];
     document.getElementById('schedule-text').value = '';
+    document.getElementById('items-text').value = '';
     alarmTimeInput.value = '';
     alarmEnabledInput.checked = false;
     // 削除後の予定を反映する
@@ -314,6 +315,7 @@ document.getElementById('save-schedule').addEventListener('click', () => {
     }).catch(() => {
       alarmEnabledInput.checked = false;
       audioEnabled = false;
+      saveCurrentSchedule();
       if (alarmSound.error) {
         alarmStatus.textContent = 'alarm.mp3を読み込めません。GitHubにalarm.mp3を追加してください。';
       } else {
@@ -340,31 +342,24 @@ document.getElementById('save-schedule').addEventListener('click', () => {
   }, 1000);
 
   document.addEventListener("keydown", (e) => {
-    // テキストエリアや入力欄で入力中の場合は、日付変更ショートカットを無効化する
-    if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
-      return;
-    }
+  if (!selectedDayKey) return;
+　
+  const [year, month, day] = selectedDayKey.split("-").map(Number);
 
-    if (!selectedDayKey) return;
-  
-    const [year, month, day] = selectedDayKey.split("-").map(Number);
+  let newDate = new Date(year, month - 1, day);
 
-    let newDate = new Date(year, month - 1, day);
+  if (e.key === "ArrowLeft") newDate.setDate(newDate.getDate() - 1);
+  if (e.key === "ArrowRight") newDate.setDate(newDate.getDate() + 1);
+  if (e.key === "ArrowUp") newDate.setDate(newDate.getDate() - 7);
+  if (e.key === "ArrowDown") newDate.setDate(newDate.getDate() + 7);
 
-    if (e.key === "ArrowLeft") newDate.setDate(newDate.getDate() - 1);
-    if (e.key === "ArrowRight") newDate.setDate(newDate.getDate() + 1);
-    if (e.key === "ArrowUp") newDate.setDate(newDate.getDate() - 7);
-    if (e.key === "ArrowDown") newDate.setDate(newDate.getDate() + 7);
+  const newKey = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,"0")}-${String(newDate.getDate()).padStart(2,"0")}`;
 
-    const newKey = `${newDate.getFullYear()}-${String(newDate.getMonth()+1).padStart(2,"0")}-${String(newDate.getDate()).padStart(2,"0")}`;
-
-    const target = document.querySelector(`.days div[data-date="${newKey}"]`);
-    if (target) selectDay(target);
-  });
+  const target = document.querySelector(`.days div[data-date="${newKey}"]`);
+  if (target) selectDay(target);
+});
 document.getElementById('close-panel').addEventListener('click', () => {
   document.getElementById('schedule-panel').style.display = 'none';
 });
 
- 
 </script>
-
